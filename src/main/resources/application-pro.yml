@@ -1,0 +1,34 @@
+spring:
+  datasource:
+    username: *
+    password: *
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: *
+    hikari:
+      minimum-idle: 5
+      connection-test-query: SELECT 1 FROM DUAL
+      validation-timeout: 1000
+      idle-timeout: 300000
+      maximum-pool-size: 20
+      destroy-method: shutdown
+
+  jpa:
+    database: MYSQL
+    hibernate:
+      ddl-auto: update
+      use_query_cache: true
+    show-sql: false
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    open-in-view: true
+
+  data:
+    mongodb:
+      uri: *
+
+logging:
+  config: classpath:logs/pro.xml
+
+system:
+  ## session过期时间
+  loginTimeOut: 1800
+

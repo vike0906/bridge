@@ -1,0 +1,108 @@
+package com.vike.bridge.controller;
+
+import com.vike.bridge.common.Assert;
+import com.vike.bridge.common.CommonResponse;
+import com.vike.bridge.common.ExceptionEnum;
+import com.vike.bridge.common.GlobalConstant;
+import com.vike.bridge.component.LocalCache;
+import com.vike.bridge.dao.SysUserRepository;
+import com.vike.bridge.entity.SysUser;
+import com.vike.bridge.utils.RandomUtil;
+import com.vike.bridge.config.shiro.AuthUtil;
+import com.vike.bridge.vo.UserVo;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.subject.Subject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
+
+/**
+ * @author: lsl
+ * @createDate: 2019/11/27
+ */
+@Slf4j
+@RestController
+public class AuthController {
+
+    @Autowired
+    SysUserRepository sysUserRepository;
+
+    @PostMapping("login")
+    public CommonResponse<UserVo> login(@RequestParam String name, @RequestParam String password){
+
+        Subject subject = SecurityUtils.getSubject();
+
+        UsernamePasswordToken usernamePasswordToken = new UsernamePasswordToken(name.trim(), password.trim());
+
+        try {
+            subject.login(usernamePasswordToken);
+        }catch (AuthenticationException e){
+            log.error(e.getMessage());
+            if(ExceptionEnum.USER_STATUS_ERROR.getMessage().equals(e.getMessage())){
+                Assert.failed(ExceptionEnum.USER_STATUS_ERROR);
+            }
+            Assert.failed(ExceptionEnum.NAME_OR_PASSWORD_ERROR);
+        }
+
+        String token = subject.getSession().getId().toString();
+
+        SysUser user = AuthUtil.getUser();
+
+        /** 存在已登陆信息，则剔除已登录*/
+        String token1 = LocalCache.getToken(user.getId());
+        if(!StringUtils.isEmpty(token1)){
+            AuthUtil.remove(token1);
+        }
+
+        LocalCache.putToken(user.getId(),token);
+
+        UserVo vo = new UserVo(user.getName(),token);
+
+        log.info("用户：{} 登录成功",user.getName());
+
+        return new CommonResponse<>(vo);
+    }
+
+    @GetMapping("logout")
+    public CommonResponse logout(){
+        SysUser user = AuthUtil.getUser();
+        Subject subject = SecurityUtils.getSubject();
+        subject.logout();
+        LocalCache.removeToken(user.getId());
+        log.info("用户：{}退出登录",user.getName());
+        return CommonResponse.success("当前登录已注销");
+    }
+
+    @PostMapping("change-psd")
+    public CommonResponse changePsd(@RequestParam String oldPsd, @RequestParam String newPsd){
+
+        SysUser user = AuthUtil.getUser();
+
+        String hash1 = AuthUtil.hash(oldPsd, user.getSalt());
+
+        if(hash1.equals(user.getPassword())){
+
+            String salt = RandomUtil.randomString(GlobalConstant.SALT_LENGTH);
+            String hash2 = AuthUtil.hash(newPsd, salt);
+
+            Optional<SysUser> op = sysUserRepository.findById(user.getId());
+            Assert.check(!op.isPresent(),ExceptionEnum.SYSTEM_ERROR);
+
+            SysUser sysUser = op.get();
+            sysUser.setPassword(hash2).setSalt(salt);
+
+            sysUserRepository.save(sysUser);
+
+            logout();
+
+            return CommonResponse.success("密码修改成功,请重新登陆");
+        }else {
+            return CommonResponse.fail("密码错误");
+        }
+    }
+}
