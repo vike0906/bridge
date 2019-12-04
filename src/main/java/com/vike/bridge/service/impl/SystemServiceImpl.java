@@ -14,6 +14,7 @@ import com.vike.bridge.service.SystemService;
 import com.vike.bridge.utils.RandomUtil;
 import com.vike.bridge.vo.ActionVo;
 import com.vike.bridge.vo.TreeDataVo;
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -22,6 +23,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
@@ -34,6 +38,8 @@ import java.util.*;
 @Service
 public class SystemServiceImpl implements SystemService {
 
+    @PersistenceContext
+    private EntityManager entityManager;
     @Autowired
     SysUserRepository sysUserRepository;
     @Autowired
@@ -70,9 +76,12 @@ public class SystemServiceImpl implements SystemService {
             return q.getRestriction();
         };
         Page<SysUser> page = sysUserRepository.findAll(specification, pageLimit.page());
+        Session unwrap = entityManager.unwrap(Session.class);
         List<SysUser> content = page.getContent();
         for(SysUser sysUser:content){
+            if(sysUser.getId()==3L)
             sysUser.setPassword("").setSalt("");
+            unwrap.evict(sysUser);
         }
         return new PageImpl<>(content,page.getPageable(),page.getTotalElements());
     }
