@@ -30,6 +30,9 @@ public class SysOperateLog {
     @Column(name = "user_name")
     private String userName;
 
+    @Column(name = "req_type")
+    private int requestType;
+
     @Column(name = "req_name")
     private String requestName;
 

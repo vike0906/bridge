@@ -28,6 +28,17 @@ import javax.servlet.http.HttpServletRequest;
 @Component
 public class OperateAspect {
 
+    /** 登陆请求*/
+    public final static int LOGIN_REQUEST = 1;
+
+    /** 修改密码*/
+    public final static int CHANGE_PSD_REQUEST = 2;
+
+    /** 退出登陆*/
+    public final static int LOGOUT_REQUEST = 3;
+
+    /** 普通请求*/
+    public final static int COMMON_REQUEST = 4;
 
     private static Gson JSON_FORMAT = new Gson();
 
@@ -52,6 +63,7 @@ public class OperateAspect {
 
                 SysUser user = AuthUtil.getUser();
                 sysOperate.setUserId(user.getId()).setUserName(user.getName())
+                        .setRequestType(LOGIN_REQUEST)
                         .setRequestName(apiPointcut.value()).setRequestParam("*");
 
                 CommonResponse response = (CommonResponse)proceed;
@@ -85,8 +97,8 @@ public class OperateAspect {
             SysUser user = AuthUtil.getUser();
 
             sysOperate.setUserId(user.getId()).setUserName(user.getName())
-                    .setRequestName(apiPointcut.value())
-                    .setRequestParam("*").setIpAddr(ipInt);
+                    .setRequestType("修改密码".equals(apiPointcut.value())?CHANGE_PSD_REQUEST:LOGOUT_REQUEST)
+                    .setRequestName(apiPointcut.value()).setRequestParam("*").setIpAddr(ipInt);
         }else{
             log.error("System Logout Or ChangePsd Aspect Exception...");
         }
@@ -125,6 +137,7 @@ public class OperateAspect {
 
             SysUser user = AuthUtil.getUser();
             sysOperate.setUserId(user.getId()).setUserName(user.getName())
+                    .setRequestType(COMMON_REQUEST)
                     .setRequestName(apiPointcut.value()).setRequestParam(JSON_FORMAT.toJson(joinPoint.getArgs()));
 
             CommonResponse response = (CommonResponse)resp;
