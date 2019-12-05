@@ -1,5 +1,6 @@
 package com.vike.bridge.controller;
 
+import com.vike.bridge.common.ApiPointcut;
 import com.vike.bridge.common.CommonResponse;
 import com.vike.bridge.common.PageLimit;
 import com.vike.bridge.common.SystemHelp;
@@ -42,6 +43,7 @@ public class SystemController {
         return new CommonResponse<>(page);
     }
 
+    @ApiPointcut("添加/编辑用户")
     @PostMapping("save-user")
     public CommonResponse saveUser(@RequestParam(required = false) Long id,
                                    @RequestParam String name,
@@ -53,6 +55,7 @@ public class SystemController {
 
     }
 
+    @ApiPointcut("删除用户")
     @DeleteMapping("delete-user")
     public CommonResponse saveUser(@RequestParam Long id){
         systemService.deleteUser(id);
@@ -74,6 +77,7 @@ public class SystemController {
         return new CommonResponse<>(page);
     }
 
+    @ApiPointcut("添加/编辑角色")
     @PostMapping("save-role")
     public CommonResponse saveRole(@RequestParam(required = false) Long id,
                                    @RequestParam String name,
@@ -91,6 +95,7 @@ public class SystemController {
 
     }
 
+    @ApiPointcut("删除角色")
     @DeleteMapping("delete-role")
     public CommonResponse deleteRole(@RequestParam Long id){
         systemService.deleteRole(id);
@@ -110,6 +115,8 @@ public class SystemController {
         Page<SysAction> page = systemService.getActions(order,direction,pageLimit);
         return new CommonResponse<>(page);
     }
+
+    @ApiPointcut("添加/编辑权限")
     @PostMapping("save-action")
     public CommonResponse saveAction(@RequestParam(required = false) Long id,
                                      @RequestParam String name,
@@ -122,6 +129,7 @@ public class SystemController {
         return CommonResponse.success(s);
     }
 
+    @ApiPointcut("删除权限")
     @DeleteMapping("delete-action")
     public CommonResponse deleteAction(@RequestParam Long id){
         systemService.deleteAction(id);

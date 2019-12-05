@@ -1,5 +1,6 @@
 package com.vike.bridge.controller;
 
+import com.vike.bridge.common.ApiPointcut;
 import com.vike.bridge.common.CommonResponse;
 import com.vike.bridge.common.PageLimit;
 import com.vike.bridge.mogoEntity.BaseStockInfo;
@@ -24,6 +25,7 @@ public class StockController {
     @Autowired
     StockService stockInfoService;
 
+    @ApiPointcut("查看股票汇总信息")
     @GetMapping("base")
     public CommonResponse<Page<BaseStockInfo>> base(@RequestParam(required = false)String exchange,
                        @RequestParam(required = false)String queryStr,

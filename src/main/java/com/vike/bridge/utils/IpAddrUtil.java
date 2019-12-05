@@ -10,6 +10,8 @@ public class IpAddrUtil {
 
     /**IP分割符*/
     private final static String SPLIT = ".";
+    /**IP6标识*/
+    private final static int IP_V6_MARK = 0;
 
     /**获取IP地址*/
     public static String ipInRequest(HttpServletRequest request){
@@ -35,6 +37,9 @@ public class IpAddrUtil {
 
 
     public static int ipToInt(String idAddr) {
+        if(idAddr.contains(":")){
+            return IP_V6_MARK;
+        }
         String[] ips = idAddr.split("\\.");
         int ipInt = 0;
         for (int i = 0; i < ips.length; i++) {

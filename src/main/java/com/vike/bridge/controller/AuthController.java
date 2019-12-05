@@ -1,9 +1,6 @@
 package com.vike.bridge.controller;
 
-import com.vike.bridge.common.Assert;
-import com.vike.bridge.common.CommonResponse;
-import com.vike.bridge.common.ExceptionEnum;
-import com.vike.bridge.common.GlobalConstant;
+import com.vike.bridge.common.*;
 import com.vike.bridge.component.LocalCache;
 import com.vike.bridge.dao.SysUserRepository;
 import com.vike.bridge.entity.SysUser;
@@ -32,6 +29,7 @@ public class AuthController {
     @Autowired
     SysUserRepository sysUserRepository;
 
+    @ApiPointcut("登陆系统")
     @PostMapping("login")
     public CommonResponse<UserVo> login(@RequestParam String name, @RequestParam String password){
 
@@ -68,7 +66,8 @@ public class AuthController {
         return new CommonResponse<>(vo);
     }
 
-    @GetMapping("logout")
+    @ApiPointcut("退出登陆")
+    @PostMapping("logout")
     public CommonResponse logout(){
         SysUser user = AuthUtil.getUser();
         Subject subject = SecurityUtils.getSubject();
@@ -78,6 +77,7 @@ public class AuthController {
         return CommonResponse.success("当前登录已注销");
     }
 
+    @ApiPointcut("修改密码")
     @PostMapping("change-psd")
     public CommonResponse changePsd(@RequestParam String oldPsd, @RequestParam String newPsd){
 
