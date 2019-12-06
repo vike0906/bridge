@@ -2,6 +2,7 @@ package com.vike.bridge.component;
 
 import com.google.gson.Gson;
 import com.vike.bridge.common.ApiPointcut;
+import com.vike.bridge.common.BusinessException;
 import com.vike.bridge.common.CommonResponse;
 import com.vike.bridge.config.shiro.AuthUtil;
 import com.vike.bridge.dao.SysOperateLogRepository;
@@ -48,9 +49,8 @@ public class OperateAspect {
     /**登陆请求*/
     @Around("execution( * login(..))&&@annotation(apiPointcut)")
     public Object aroundLogin(ProceedingJoinPoint joinPoint, ApiPointcut apiPointcut){
-        Object proceed = null;
         try{
-            proceed = joinPoint.proceed();
+            Object proceed = joinPoint.proceed();
 
             ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
 
@@ -72,12 +72,11 @@ public class OperateAspect {
             }else{
                 log.error("System Login Aspect Exception...");
             }
-        }catch (Exception e){
-            e.printStackTrace();
-        } catch (Throwable throwable) {
-            throwable.printStackTrace();
+            return proceed;
+        }catch (Throwable throwable) {
+            throw new BusinessException(throwable.getMessage());
         }
-        return proceed;
+
     }
 
     /**修改密码或退出登陆*/
@@ -102,10 +101,9 @@ public class OperateAspect {
         }else{
             log.error("System Logout Or ChangePsd Aspect Exception...");
         }
-        Object proceed = null;
         try{
 
-            proceed = joinPoint.proceed();
+            Object proceed = joinPoint.proceed();
 
             if(proceed instanceof CommonResponse){
 
@@ -115,13 +113,14 @@ public class OperateAspect {
             }else{
                 log.error("System Logout Or ChangePsd Aspect Exception...");
             }
+
             sysOperateLogRepository.save(sysOperate);
-        }catch (Exception e){
-            e.printStackTrace();
+
+            return proceed;
         } catch (Throwable throwable) {
-            throwable.printStackTrace();
+            throw new BusinessException(throwable.getMessage());
         }
-        return proceed;
+
     }
 
     /**记录请求日志*/
