@@ -41,7 +41,8 @@ public class AuthConfig {
         Map<String,String> map = new LinkedHashMap<>();
 
         map.put("/login", "anon");
-
+        map.put("/captcha", "anon");
+        map.put("/validation", "anon");
         map.put("/swagger-ui.html", "anon");
         map.put("/v2/api-docs", "anon");
         map.put("/webjars/springfox-swagger-ui/**", "anon");

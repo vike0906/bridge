@@ -17,7 +17,7 @@ public class LocalCache {
 
     /**构建Token缓存容器,30分钟后过期*/
     private static LoadingCache<Long, String> TOKEN_CACHE = CacheBuilder.newBuilder()
-            .initialCapacity(500)
+            .initialCapacity(100)
             .concurrencyLevel(10)
             .expireAfterWrite(30, TimeUnit.MINUTES)
             .build(new CacheLoader<Long, String>() {
@@ -42,4 +42,27 @@ public class LocalCache {
         TOKEN_CACHE.invalidate(key);
         TOKEN_CACHE.cleanUp();
     }
+
+    /**构建验证码缓存容器,5分钟后过期*/
+    private static LoadingCache<String, String> CAPTCHA_CACHE = CacheBuilder.newBuilder()
+            .initialCapacity(200)
+            .concurrencyLevel(10)
+            .expireAfterWrite(300, TimeUnit.SECONDS)
+            .build(new CacheLoader<String, String>() {
+                @Override
+                public String load(String s){
+                    return null;
+                }
+            });
+
+    /**储存Captcha*/
+    public static void putCaptcha(String key, String value){
+        CAPTCHA_CACHE.put(key,value);
+    }
+
+    /**获取Captcha*/
+    public static String getCaptcha(String key){
+        return CAPTCHA_CACHE.getIfPresent(key);
+    }
+
 }

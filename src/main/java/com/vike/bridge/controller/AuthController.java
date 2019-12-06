@@ -4,6 +4,7 @@ import com.vike.bridge.common.*;
 import com.vike.bridge.component.LocalCache;
 import com.vike.bridge.dao.SysUserRepository;
 import com.vike.bridge.entity.SysUser;
+import com.vike.bridge.utils.CaptchaUtil;
 import com.vike.bridge.utils.RandomUtil;
 import com.vike.bridge.config.shiro.AuthUtil;
 import com.vike.bridge.vo.UserVo;
@@ -16,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Optional;
 
 /**
@@ -103,6 +106,39 @@ public class AuthController {
             return CommonResponse.success("密码修改成功,请重新登陆");
         }else {
             return CommonResponse.fail("密码错误");
+        }
+    }
+
+    @GetMapping("captcha")
+    public void captcha(HttpServletResponse response, @RequestParam String serial){
+
+        response.setHeader("Pragma", "No-cache");
+        response.setHeader("Cache-Control", "no-cache");
+        response.setDateHeader("Expires", 0);
+        response.setContentType("image/png");
+
+        try {
+
+            String captcha = CaptchaUtil.generateCaptcha(response.getOutputStream());
+
+            LocalCache.putCaptcha(serial,captcha.toLowerCase());
+
+        } catch (IOException e) {
+
+            log.error("获取验证码图片并回传失败：{}",serial);
+
+        }
+    }
+
+    @PostMapping("validation")
+    public CommonResponse validation(@RequestParam String serial, @RequestParam String captcha){
+
+        String captcha1 = LocalCache.getCaptcha(serial);
+
+        if(captcha.toLowerCase().equals(captcha1)){
+            return CommonResponse.success();
+        }else{
+            return CommonResponse.fail("图片验证码校验失败");
         }
     }
 }
