@@ -83,7 +83,8 @@ public class SystemController {
                                    @RequestParam String name,
                                    @RequestParam String code,
                                    @RequestParam Integer status,
-                                   @RequestParam(value = "actions[]") String [] actions){
+                                   @RequestParam(required = false,value = "actions[]") String [] actions){
+        if(actions==null) actions = new String[0];
         Long [] actionIds = new Long[actions.length];
         if(actions.length>0){
             for(int i=0;i<actions.length;i++){
