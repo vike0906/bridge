@@ -4,12 +4,14 @@ import com.vike.bridge.common.ApiPointcut;
 import com.vike.bridge.common.CommonResponse;
 import com.vike.bridge.common.PageLimit;
 import com.vike.bridge.common.SystemHelp;
+import com.vike.bridge.component.NativeQuery;
 import com.vike.bridge.config.shiro.AuthUtil;
 import com.vike.bridge.entity.SysAction;
 import com.vike.bridge.entity.SysRole;
 import com.vike.bridge.entity.SysUser;
 import com.vike.bridge.service.SystemService;
 import com.vike.bridge.vo.ActionVo;
+import com.vike.bridge.vo.RequestStatisticsVo;
 import com.vike.bridge.vo.TreeDataVo;
 import com.vike.bridge.vo.TreeNodeVo;
 import lombok.extern.slf4j.Slf4j;
@@ -28,8 +30,11 @@ import java.util.List;
 @RestController
 @RequestMapping("system")
 public class SystemController {
+
     @Autowired
     SystemService systemService;
+    @Autowired
+    NativeQuery nativeQuery;
 
     @GetMapping("users")
     public CommonResponse<Page<SysUser>> users(@RequestParam(required = false) String queryStr,
@@ -150,6 +155,14 @@ public class SystemController {
         ActionVo[] actionVos = systemService.roleMenu(user.getRole().getId());
 
         return new CommonResponse<>(actionVos);
+    }
+
+    @GetMapping("statistics")
+    public CommonResponse<List<RequestStatisticsVo>> statistics(){
+
+        List<RequestStatisticsVo> requestStatisticsVos = nativeQuery.RequestStatistics();
+
+        return new CommonResponse<>(requestStatisticsVos);
     }
 
 }
