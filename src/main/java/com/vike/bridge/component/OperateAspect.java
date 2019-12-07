@@ -123,29 +123,51 @@ public class OperateAspect {
 
     }
 
-    /**记录请求日志*/
-    @AfterReturning(returning = "resp", pointcut = "execution(public * com.vike.bridge.controller..*.*(..))&&!target(com.vike.bridge.controller.AuthController)&&@annotation(apiPointcut)")
-    public void doAfterReturning(JoinPoint joinPoint, Object resp,ApiPointcut apiPointcut) throws Throwable {
-        SysOperateLog sysOperate = new SysOperateLog();
+    /**记录普通请求日志*/
+    @Around("execution(public * com.vike.bridge.controller..*.*(..))&&!target(com.vike.bridge.controller.AuthController)&&@annotation(apiPointcut)")
+    public Object commonRequest(ProceedingJoinPoint joinPoint, ApiPointcut apiPointcut){
+
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        if(attributes!=null&&resp instanceof CommonResponse){
+
+        SysOperateLog sysOperate = new SysOperateLog();
+
+        if(attributes!=null){
 
             HttpServletRequest request = attributes.getRequest();
             String ipStr = IpAddrUtil.ipInRequest(request);
             int ipInt = IpAddrUtil.ipToInt(ipStr);
 
             SysUser user = AuthUtil.getUser();
-            sysOperate.setUserId(user.getId()).setUserName(user.getName())
+            sysOperate.setUserId(user.getId()).setUserName(user.getName()).setIpAddr(ipInt)
                     .setRequestType(COMMON_REQUEST)
-                    .setRequestName(apiPointcut.value()).setRequestParam(JSON_FORMAT.toJson(joinPoint.getArgs()));
-
-            CommonResponse response = (CommonResponse)resp;
-            sysOperate.setResponseCode(response.getCode()).setResponseMessage(response.getMessage()).setIpAddr(ipInt);
-            sysOperateLogRepository.save(sysOperate);
+                    .setRequestName(apiPointcut.value())
+                    .setRequestParam(JSON_FORMAT.toJson(joinPoint.getArgs()));
         }else{
             log.error("System API Aspect Exception...");
         }
 
+        try{
+
+            Object proceed = joinPoint.proceed();
+
+            if(proceed instanceof CommonResponse){
+
+                CommonResponse response = (CommonResponse)proceed;
+                sysOperate.setResponseCode(response.getCode()).setResponseMessage(response.getMessage());
+                sysOperateLogRepository.save(sysOperate);
+
+            }else{
+                log.error("System API Aspect Exception...");
+            }
+
+            return proceed;
+        } catch (Throwable throwable) {
+
+            sysOperate.setResponseCode(200).setResponseMessage(throwable.getMessage());
+            sysOperateLogRepository.save(sysOperate);
+
+            throw new BusinessException(throwable.getMessage());
+        }
 
     }
 }
