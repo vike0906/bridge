@@ -1,9 +1,9 @@
 spring:
   datasource:
-    username: *
-    password: *
+    username: vike0906
+    password: v123456.
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: *
+    url: jdbc:mysql://106.13.222.152:9001/vike?characterEncoding=UTF-8
     hikari:
       minimum-idle: 5
       connection-test-query: SELECT 1 FROM DUAL
@@ -15,7 +15,7 @@ spring:
   jpa:
     database: MYSQL
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
       use_query_cache: true
     show-sql: false
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
@@ -23,7 +23,7 @@ spring:
 
   data:
     mongodb:
-      uri: *
+      uri: mongodb://stock:123456@106.13.222.152:9003/stockdb
 
 logging:
   config: classpath:logs/pro.xml

@@ -20,10 +20,10 @@ public class NativeQuery {
     @PersistenceContext
     EntityManager entityManager;
 
-    /**系统七日内访问统计*/
+    /**系统30日内用户登陆统计*/
     public List<RequestStatisticsVo> RequestStatistics(){
 
-        String sql = "SELECT  DATE(t.create_time) _date, COUNT(id) _count FROM b_sys_operate_log  t WHERE t.req_type=1 AND DATE(t.create_time) BETWEEN DATE_SUB(CURDATE(), INTERVAL 7 DAY) AND CURDATE() GROUP BY _date";
+        String sql = "SELECT  DATE(t.create_time) _date, COUNT(id) _count FROM b_sys_operate_log  t WHERE t.req_type=1 AND DATE(t.create_time) BETWEEN DATE_SUB(CURDATE(), INTERVAL 30 DAY) AND CURDATE() GROUP BY _date";
 
         Query nativeQuery = entityManager.createNativeQuery(sql,RequestStatisticsVo.class);
 
