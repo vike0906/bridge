@@ -23,12 +23,12 @@ public class NativeQuery {
     /**系统七日内访问统计*/
     public List<RequestStatisticsVo> RequestStatistics(){
 
-        String sql = "SELECT COUNT(id), DATE(t.create_time) _date FROM b_sys_operate_log  t WHERE DATE(t.create_time) BETWEEN DATE_SUB(CURDATE(), INTERVAL 7 DAY) AND CURDATE() GROUP BY _date";
+        String sql = "SELECT  DATE(t.create_time) _date, COUNT(id) _count FROM b_sys_operate_log  t WHERE t.req_type=1 AND DATE(t.create_time) BETWEEN DATE_SUB(CURDATE(), INTERVAL 7 DAY) AND CURDATE() GROUP BY _date";
 
-        Query nativeQuery = entityManager.createNativeQuery(sql, RequestStatisticsVo.class);
+        Query nativeQuery = entityManager.createNativeQuery(sql,RequestStatisticsVo.class);
 
-        List<RequestStatisticsVo> resultList = nativeQuery.getResultList();
+        List<RequestStatisticsVo> requestList = (List<RequestStatisticsVo>) nativeQuery.getResultList();
 
-        return resultList;
+        return requestList;
     }
 }
