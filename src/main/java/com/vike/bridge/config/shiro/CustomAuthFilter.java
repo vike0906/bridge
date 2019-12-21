@@ -21,7 +21,6 @@ import java.io.PrintWriter;
  * @author: lsl
  * @createDate: 2019/11/26
  */
-//@Component
 public class CustomAuthFilter extends FormAuthenticationFilter {
 
     private final static int UN_LOGIN_CODE = 100;

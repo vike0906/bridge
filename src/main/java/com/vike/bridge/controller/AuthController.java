@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Optional;
 
 /**
@@ -139,6 +140,19 @@ public class AuthController {
             return CommonResponse.success();
         }else{
             return CommonResponse.fail("图片验证码校验失败");
+        }
+    }
+
+    @GetMapping("test")
+    public void test(HttpServletResponse response){
+
+        response.setContentType("text/plan");
+        try {
+            PrintWriter writer = response.getWriter();
+            writer.print("index");
+            writer.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

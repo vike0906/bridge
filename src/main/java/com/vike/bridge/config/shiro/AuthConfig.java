@@ -40,6 +40,7 @@ public class AuthConfig {
 
         Map<String,String> map = new LinkedHashMap<>();
 
+        map.put("/test", "anon");
         map.put("/login", "anon");
         map.put("/captcha", "anon");
         map.put("/validation", "anon");

@@ -68,7 +68,7 @@ public class IpAddrUtil {
 
         int ipInt = ipToInt("1.1.1.2");
         System.out.println("ipInt:" + ipInt);
-        String ipArr = intToIp(2005991947);
+        String ipArr = intToIp(-1222272693);
         System.out.println(ipArr);
 
     }
