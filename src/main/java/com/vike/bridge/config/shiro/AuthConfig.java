@@ -48,6 +48,7 @@ public class AuthConfig {
         map.put("/v2/api-docs", "anon");
         map.put("/webjars/springfox-swagger-ui/**", "anon");
         map.put("/swagger-resources/**", "anon");
+        map.put("/webSocket/**","anon");
 
         map.put("/static/**", "anon");
         map.put("/**/*.png", "anon");
