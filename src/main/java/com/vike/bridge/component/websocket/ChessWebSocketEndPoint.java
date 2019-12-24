@@ -43,8 +43,8 @@ public class ChessWebSocketEndPoint {
         String key = WEB_SOCKET_TAG+token;
 
         add(key, session);
-
-        sendMessage(session, token);
+        String initMessage = "{\"type\":1,\"content\":0}";
+        sendMessage(session, initMessage);
 
         log.info("在线人数：{}",count());
     }
