@@ -30,31 +30,30 @@ public class ChessWebSocketEndPoint {
         String key = WEB_SOCKET_TAG+token;
 
         add(key, session);
-//        String initMessage = "{\"type\":1,\"content\":0}";
-//        sendMessage(session, initMessage);
 
         log.info("在线人数：{}",count());
     }
 
     @OnMessage
     public void onMessage(@PathParam("token") String token, String message){
-        log.info(token);
-        log.info("有新消息： {}", message);
         ChessHandler.handler(token, message);
-//        String initMessage = "{\"type\":1,\"content\":0}";
-//        sendMessage(session, initMessage);
     }
 
     @OnClose
     public void onClose(@PathParam("token") String token,Session session){
         log.info("连接关闭： {}", token);
-        String key = WEB_SOCKET_TAG+token;
+
         try {
             session.close();
         } catch (IOException e) {
             log.error("onError Exception: {}", e);
         }
+
+        ChessHandler.close(token);
+
+        String key = WEB_SOCKET_TAG+token;
         remove(key);
+
         log.info("在线人数：{}",count());
     }
 

@@ -50,24 +50,27 @@ public class ChessHandler {
                 match(token,jsonObject);
                 break;
             case 2:
-                //pass
+                PLAYER_MATCH_QUEUE.remove(token);
                 break;
             case 3:
                 //退出游戏
+                chess.exit(token,message);
                 break;
             case 4:
                 //请求重新开局
+                chess.refresh(token,message);
                 break;
             case 5:
                 //认输
+                chess.giveUp(token,message);
                 break;
             case 6:
                 //走棋
-                chess = new ChessPlayer();
                 chess.setUp(token,message);
                 break;
             case 7:
                 //赢棋
+                chess.win(token,message);
                 break;
             default:
                 String errorMessage = "{\"type\":100,\"content\":0}";
@@ -94,6 +97,7 @@ public class ChessHandler {
 
                 chessMessage.setIsFirst(ChessConstant.SECOND);
                 sendMessage(poll,gson.toJson(chessMessage));
+
             }else {
 
                 chessMessage.setType(ChessConstant.MATCHING);
@@ -107,6 +111,10 @@ public class ChessHandler {
 
     }
 
+    protected  static void close(String token){
+        PLAYER_MATCH_QUEUE.remove(token);
+        chess.exit(token,null);
+    }
 
     /**发送消息*/
     protected static void sendMessage(String token, String msg){

@@ -17,15 +17,17 @@ public interface Chess {
     }
 
     /**退出游戏*/
-    void exit(String token);
+    void exit(String token,String message);
 
     /**重新开始*/
-    void refresh(String token);
+    void refresh(String token,String message);
 
     /**认输*/
-    void giveUp(String token);
+    void giveUp(String token,String message);
 
     /**走棋*/
     void setUp(String token, String message);
+
+    void win(String token,String message);
 
 }
