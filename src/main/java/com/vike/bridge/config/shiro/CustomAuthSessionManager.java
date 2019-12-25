@@ -88,6 +88,7 @@ public class CustomAuthSessionManager extends DefaultSessionManager implements W
         if (currentId == null) {
             String msg = "sessionId cannot be null when persisting for subsequent requests.";
             throw new IllegalArgumentException(msg);
+
         } else {
             String idString = currentId.toString();
 

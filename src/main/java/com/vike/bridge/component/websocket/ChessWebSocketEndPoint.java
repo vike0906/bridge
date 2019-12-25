@@ -50,8 +50,8 @@ public class ChessWebSocketEndPoint {
     }
 
     @OnMessage
-    public void onMessage(String message){
-        log.info("有新消息： {}", message);
+    public void onMessage(String message, Session session){
+        log.info("有新消息： {},{}", message,session);
     }
 
     @OnClose
