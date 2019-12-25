@@ -49,4 +49,12 @@ public class WebSocketPool {
     public static Map<String, Session> sessionMap(){
         return ONLINE_USER_SESSIONS;
     }
+
+    /**
+     * 根据key获取Session
+     * @param key
+     * */
+    public static Session gainSession(String key){
+        return ONLINE_USER_SESSIONS.get(key);
+    }
 }

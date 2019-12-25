@@ -1,4 +1,4 @@
-package com.vike.bridge.component.websocket;
+package com.vike.bridge.component.websocket.chess;
 
 import lombok.*;
 
